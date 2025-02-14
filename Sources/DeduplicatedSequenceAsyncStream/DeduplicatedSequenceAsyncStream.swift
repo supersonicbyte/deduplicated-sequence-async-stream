@@ -73,7 +73,7 @@
 ///  2. Consumer task wakes up
 ///    ```swift
 ///    for await prices in stream {
-///       print("\(prices)”) // Outputs: [APPL=151.0, GOOGL=2800.0]
+///       print("\(prices)") // Outputs: [APPL=151.0, GOOGL=2800.0]
 ///    }
 ///    ```
 ///
@@ -83,14 +83,14 @@
 ///
 ///  3. Producer yields two more values
 ///    ```swift
-///    continuation.yield(StockPrice(symbol: “NVDA", price: 135.0))
-///    continuation.yield(StockPrice(symbol: “APPL", price: 152.0))
+///    continuation.yield(StockPrice(symbol: "NVDA", price: 135.0))
+///    continuation.yield(StockPrice(symbol: "APPL", price: 152.0))
 ///    ```
 ///
 ///  4. Consumer wakes up:
 ///   ```swift
 ///   for await prices in stream {
-///     print("\(prices)”) // Output: [APPL=152.0, NVDA=135.0]
+///     print("\(prices)") // Output: [APPL=152.0, NVDA=135.0]
 ///   }
 ///   ```
 ///  Now the the stream returns a sequence with two elements containing the AAPL and NVDA stocks. The GOOGL stock
@@ -101,7 +101,7 @@
 ///
 public struct DeduplicatedSequenceAsyncStream<Element: Hashable> {
 
-    // A mechanism to interface between synchronous code and an asynchronous
+    /// A mechanism to interface between synchronous code and an asynchronous
     /// stream.
     ///
     /// The closure you provide to the `DeduplicatedSequenceAsyncStream` in
