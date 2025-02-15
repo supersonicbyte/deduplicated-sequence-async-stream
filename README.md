@@ -4,7 +4,7 @@ The `DeduplicatedSequenceAsyncStream` extends the concept of `AsyncStream` by ad
 ## Installation
 Add package to as your dependency:
 ```swift
-.package(url: "https://github.com/supersonicbyte/deduplicated-sequence-async-stream")
+.package(url: "https://github.com/supersonicbyte/deduplicated-sequence-async-stream", branch: "main")
 ```
 Voila! That's it.
 
@@ -34,7 +34,7 @@ continuation.yield(StockPrice(name: "AAPL", price: 120))
 continuation.yield(StockPrice(name: "GOOGL", price: 230))
 ```
 Use the stream's async iterator to consume the sequences produced by the stream:
-```
+```swift
 Task {
   for await prices in stream {
     print(prices)
