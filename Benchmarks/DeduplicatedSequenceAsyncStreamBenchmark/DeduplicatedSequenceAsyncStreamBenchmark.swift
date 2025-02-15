@@ -34,7 +34,26 @@ nonisolated(unsafe) let benchmarks = {
         await task.value
     }
 
-    Benchmark("AsyncStream - Yield with consume") { benchmark in
+    Benchmark("Yield with consume concurrent") { benchmark in
+        let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
+
+        let iterations = benchmark.scaledIterations
+        Task {
+            for i in iterations {
+                blackHole(continuation.yield(i))
+                await Task.yield()
+            }
+            continuation.finish()
+        }
+
+        let task = Task {
+            for await el in stream {}
+        }
+
+        await task.value
+    }
+
+    Benchmark("AsyncStream - Yield with consume (For comparison)") { benchmark in
         let (stream, continuation) = AsyncStream.makeStream(of: Int.self)
 
         for i in benchmark.scaledIterations {
