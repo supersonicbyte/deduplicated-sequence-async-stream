@@ -19,6 +19,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+        .package(url: "https://github.com/ordo-one/package-benchmark", .upToNextMajor(from: "1.4.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -31,3 +32,18 @@ let package = Package(
         ),
     ]
 )
+
+// Benchmark of DeduplicatedSequenceAsyncStreamBenchmark
+package.targets += [
+    .executableTarget(
+        name: "DeduplicatedSequenceAsyncStreamBenchmark",
+        dependencies: [
+            .product(name: "Benchmark", package: "package-benchmark"),
+            .target(name: "DeduplicatedSequenceAsyncStream")
+        ],
+        path: "Benchmarks/DeduplicatedSequenceAsyncStreamBenchmark",
+        plugins: [
+            .plugin(name: "BenchmarkPlugin", package: "package-benchmark")
+        ]
+    ),
+]

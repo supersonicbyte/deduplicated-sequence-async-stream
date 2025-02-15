@@ -44,6 +44,26 @@ struct DeduplicatedSequenceAsyncStreamTests {
         continuation.finish()
     }
 
+    @Test func test_1000_yields() async throws {
+        let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
+
+
+        for i in 0..<1_000 {
+            continuation.yield(i)
+        }
+
+        let task = Task {
+            await confirmation { confirmation in
+                for await _ in stream {
+                    confirmation()
+                    continuation.finish()
+                }
+            }
+        }
+
+        await task.value
+    }
+
     @Test func test_returns_nil_when_finished() async throws {
         let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
 
