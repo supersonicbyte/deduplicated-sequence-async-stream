@@ -1,3 +1,5 @@
+# DeduplicatedSequenceAsyncStream
+
 The `DeduplicatedSequenceAsyncStream` extends the concept of `AsyncStream` by adding element deduplication. Instead of delivering individual updates to consumers, it maintains a buffer of unique elements and delivers sequences of these elements to consumers. It requires that the elements of the generated sequence conform to `Hashable`.
 
 
