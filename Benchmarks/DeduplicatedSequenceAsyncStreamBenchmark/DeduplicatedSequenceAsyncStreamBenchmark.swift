@@ -11,15 +11,21 @@ nonisolated(unsafe) let benchmarks = {
     Benchmark("Yield") { benchmark in
         let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
 
+        benchmark.startMeasurement()
+
         for i in benchmark.scaledIterations {
             blackHole(continuation.yield(i))
         }
 
         continuation.finish()
+
+        benchmark.stopMeasurement()
     }
 
     Benchmark("Yield with consume") { benchmark in
         let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
+
+        benchmark.startMeasurement()
 
         for i in benchmark.scaledIterations {
             blackHole(continuation.yield(i))
@@ -32,10 +38,14 @@ nonisolated(unsafe) let benchmarks = {
         }
 
         await task.value
+
+        benchmark.stopMeasurement()
     }
 
     Benchmark("Yield with consume concurrent") { benchmark in
         let (stream, continuation) = DeduplicatedSequenceAsyncStream.makeStream(of: Int.self)
+
+        benchmark.startMeasurement()
 
         let iterations = benchmark.scaledIterations
         Task {
@@ -51,10 +61,14 @@ nonisolated(unsafe) let benchmarks = {
         }
 
         await task.value
+
+        benchmark.stopMeasurement()
     }
 
     Benchmark("AsyncStream - Yield with consume (For comparison)") { benchmark in
         let (stream, continuation) = AsyncStream.makeStream(of: Int.self)
+
+        benchmark.startMeasurement()
 
         for i in benchmark.scaledIterations {
             blackHole(continuation.yield(i))
@@ -71,5 +85,7 @@ nonisolated(unsafe) let benchmarks = {
         }
 
         await task.value
+
+        benchmark.startMeasurement()
     }
 }
