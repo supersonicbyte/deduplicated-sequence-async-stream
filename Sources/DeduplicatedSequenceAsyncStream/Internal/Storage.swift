@@ -11,7 +11,7 @@ extension DeduplicatedSequenceAsyncStream {
 
         struct State: @unchecked Sendable {
             var continuations: [UnsafeContinuation<[Element]?, Never>] = []
-            var pending: [Element: Element]
+            var pending: Set<Element> = []
             let limit: Continuation.BufferingPolicy
             var onTermination: TerminationHandler?
             var terminal: Bool = false
@@ -46,11 +46,11 @@ extension DeduplicatedSequenceAsyncStream {
                         if !state.terminal {
                             switch limit {
                             case .unbounded:
-                                state.pending[value] = value
+                                state.pending.insert(value)
                                 result = .enqueued(remaining: .max)
                             case .bounded(let limit):
                                 if bufferedElementsCount < limit {
-                                    state.pending[value] = value
+                                    state.pending.insert(value)
                                     result = .enqueued(remaining: limit - (bufferedElementsCount + 1))
                                 } else {
                                     result = .dropped(value)
@@ -60,7 +60,7 @@ extension DeduplicatedSequenceAsyncStream {
                             result = .terminated
                         }
 
-                        let toSend = Array(state.pending.values)
+                        let toSend = Array(state.pending)
                         state.pending.removeAll()
                         continuation.resume(returning: toSend)
                     } else if state.terminal {
@@ -86,10 +86,10 @@ extension DeduplicatedSequenceAsyncStream {
                         switch limit {
                         case .unbounded:
                             result = .enqueued(remaining: .max)
-                            state.pending[value] = value
+                            state.pending.insert(value)
                         case .bounded(let limit):
                             if bufferedElementsCount < limit {
-                                state.pending[value] = value
+                                state.pending.insert(value)
                                 let updatedCount = state.pending.count
                                 result = .enqueued(remaining: limit - updatedCount)
                             } else {
@@ -111,7 +111,7 @@ extension DeduplicatedSequenceAsyncStream {
 
                 if state.pending.count > 0 {
                     let cont = state.continuations.removeFirst()
-                    let toSend = Array(state.pending.values)
+                    let toSend = Array(state.pending)
                     cont.resume(returning: toSend)
                     state.pending.removeAll()
                 } else if state.terminal {
